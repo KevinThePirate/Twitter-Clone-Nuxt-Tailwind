@@ -6,9 +6,34 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String?
+  username     String   @unique
+  password     String
+  profileImage String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  refreshToken RefreshToken[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
 }
